@@ -1,0 +1,96 @@
+datasource db {
+    provider = "mongodb"
+    url      = env("DATABASE_URL")
+}
+
+generator client {
+    provider = "prisma-client-js"
+}
+
+model User {
+    id          String    @id @default(auto()) @map("_id") @db.ObjectId
+    firstName   String
+    lastName    String?
+    phone       String?
+    email       String    @unique
+    role        String?   @default("USER") // Default role is "USER"
+    firebaseUid String?   @unique
+    profile     Profile[] @relation("userPro")
+    address     Address[] @relation("userAdd")
+    createdAt   DateTime  @default(now())
+    updatedAt   DateTime  @updatedAt
+}
+
+model Teacher {
+    id        String  @id @default(auto()) @map("_id") @db.ObjectId
+    firstName String
+    lastName  String
+    title     String?
+    subject   String?
+    role      String? @default("TEACHER") // Default role is "TEACHER"
+
+    email       String      @unique
+    firebaseUid String?     @unique
+    phone       String?
+    education   Education[] @relation("Teacher")
+    profile     Profile[]   @relation("teacherPro")
+    createdAt   DateTime    @default(now())
+    updatedAt   DateTime    @updatedAt
+}
+
+model Profile {
+    id        String  @id @default(auto()) @map("_id") @db.ObjectId
+    bio       String?
+    avatarUrl String?
+    user      User?   @relation("userPro", fields: [userId], references: [id])
+    userId    String? @db.ObjectId
+    teacher   Teacher @relation("teacherPro", fields: [teacherId], references: [id])
+    teacherId String  @db.ObjectId
+}
+
+model Education {
+    id             String   @id @default(auto()) @map("_id") @db.ObjectId
+    degreeName     String
+    groupMajor     String
+    boardInstitute String
+    country        String
+    passingYear    String
+    user           Teacher  @relation("Teacher", fields: [userId], references: [id])
+    userId         String   @db.ObjectId
+    createdAt      DateTime @default(now())
+    updatedAt      DateTime @updatedAt
+}
+
+model Address {
+    id      String @id @default(auto()) @map("_id") @db.ObjectId
+    street  String
+    city    String
+    state   String
+    country String
+    pinCode String
+    user    User   @relation("userAdd", fields: [userId], references: [id])
+    userId  String @db.ObjectId
+}
+
+model Course {
+    id             String   @id @default(auto()) @map("_id") @db.ObjectId
+    name           String
+    value          String?
+    curriculumCode String
+    subjectCode    String
+    overview       String?
+    lab            String?
+    imageUrl       String?
+    status         Boolean
+    createdAt      DateTime @default(now())
+    updatedAt      DateTime @updatedAt
+}
+
+model Notice {
+    id        String   @id @default(auto()) @map("_id") @db.ObjectId
+    title     String
+    pdfUrl    String
+    status    Boolean
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
