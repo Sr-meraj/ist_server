@@ -3,11 +3,8 @@
   "builds": [
     {
       "src": "package.json",
-      "use": "@vercel/node",
-      "config": {
-        "includeFiles": ["path/to/prisma/schema.prisma"]
-      }
+      "use": "@vercel/node"
     }
   ],
-  "buildCommand": "npm run build && npx prisma generate"
+  "buildCommand": "npm run build"
 }
